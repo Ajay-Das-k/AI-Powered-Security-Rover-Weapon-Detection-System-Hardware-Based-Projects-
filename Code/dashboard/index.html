@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Security Rover & Weapon Detection Dashboard</title>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --accent-blue: #38bdf8;
+            --accent-green: #22c55e;
+            --accent-red: #ef4444;
+            --text-color: #f8fafc;
+            --text-muted: #94a3b8;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Roboto, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            padding: 1.25rem 2rem;
+            border-bottom: 1px solid #334155;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        header h1 {
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .status-badge {
+            padding: 0.4rem 0.8rem;
+            border-radius: 9999px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            background-color: rgba(34, 197, 94, 0.2);
+            color: var(--accent-green);
+            border: 1px solid var(--accent-green);
+        }
+
+        .status-badge.alert {
+            background-color: rgba(239, 68, 68, 0.2);
+            color: var(--accent-red);
+            border-color: var(--accent-red);
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .main-container {
+            display: grid;
+            grid-template-columns: 1fr 380px;
+            gap: 1.5rem;
+            padding: 1.5rem;
+            flex: 1;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 0.75rem;
+            border: 1px solid #334155;
+            padding: 1.25rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .card-header {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--accent-blue);
+            border-bottom: 1px solid #334155;
+            padding-bottom: 0.5rem;
+        }
+
+        .video-container {
+            position: relative;
+            aspect-ratio: 16 / 9;
+            background: #000;
+            border-radius: 0.5rem;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .video-overlay {
+            position: absolute;
+            top: 1rem;
+            left: 1rem;
+            background: rgba(15, 23, 42, 0.85);
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            font-size: 0.85rem;
+            border: 1px solid #334155;
+        }
+
+        .joystick-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.5rem;
+            max-width: 280px;
+            margin: 0 auto;
+        }
+
+        .btn {
+            background: #334155;
+            color: var(--text-color);
+            border: none;
+            padding: 0.85rem;
+            border-radius: 0.5rem;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            user-select: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn:hover {
+            background: #475569;
+        }
+
+        .btn:active {
+            transform: scale(0.95);
+            background: var(--accent-blue);
+            color: #0f172a;
+        }
+
+        .btn-stop {
+            background: var(--accent-red);
+            font-weight: bold;
+        }
+
+        .btn-stop:hover {
+            background: #dc2626;
+        }
+
+        .toggle-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.75rem;
+        }
+
+        .toggle-btn {
+            padding: 0.65rem;
+            border-radius: 0.5rem;
+            border: 1px solid #334155;
+            background: #0f172a;
+            color: var(--text-muted);
+            cursor: pointer;
+            text-align: center;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+
+        .toggle-btn.active {
+            background: rgba(56, 189, 248, 0.2);
+            color: var(--accent-blue);
+            border-color: var(--accent-blue);
+        }
+
+        .speed-slider-container {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .speed-slider-container label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        input[type="range"] {
+            width: 100%;
+            accent-color: var(--accent-blue);
+        }
+
+        @media (max-width: 900px) {
+            .main-container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>🤖 Security Rover Control Dashboard</h1>
+        <div id="system-status" class="status-badge">SYSTEM SAFE - PATROL MODE</div>
+    </header>
+
+    <div class="main-container">
+        <!-- Left Column: Video & Surveillance Feed -->
+        <div class="card">
+            <div class="card-header">📹 Real-Time AI Surveillance Feed</div>
+            <div class="video-container">
+                <div class="video-overlay">
+                    <div><strong>Camera:</strong> Front Pan/Tilt Feed</div>
+                    <div><strong>AI Detector:</strong> Active (YOLOv8)</div>
+                </div>
+                <div style="text-align: center; color: var(--text-muted);">
+                    <p style="font-size: 3rem; margin-bottom: 0.5rem;">🤖</p>
+                    <p>Live Video Stream Placeholder</p>
+                    <small>Connect Python OpenCV Feed to Stream Port 8080</small>
+                </div>
+            </div>
+            
+            <div class="toggle-group">
+                <button class="toggle-btn active" onclick="toggleObstacleSafety(this)">Obstacle Safety (ON)</button>
+                <button class="toggle-btn" onclick="toggleHazardStrobe(this)">Hazard Strobe (OFF)</button>
+                <button class="toggle-btn" onclick="toggleHeadlights(this)">Headlights (OFF)</button>
+                <button class="toggle-btn" onclick="toggleTaillights(this)">Taillights (OFF)</button>
+            </div>
+        </div>
+
+        <!-- Right Column: Rover Teleoperation Controls -->
+        <div class="card">
+            <div class="card-header">🎮 Teleoperation & Camera Pan/Tilt</div>
+
+            <div class="speed-slider-container">
+                <label>
+                    <span>Rover Speed (PWM)</span>
+                    <span id="speed-val">204 (80%)</span>
+                </label>
+                <input type="range" min="100" max="255" value="204" oninput="updateSpeed(this.value)">
+            </div>
+
+            <div class="joystick-grid">
+                <button class="btn" onclick="sendCmd('G')">↖</button>
+                <button class="btn" onclick="sendCmd('F')">▲</button>
+                <button class="btn" onclick="sendCmd('I')">↗</button>
+                <button class="btn" onclick="sendCmd('L')">◀</button>
+                <button class="btn btn-stop" onclick="sendCmd('S')">STOP</button>
+                <button class="btn" onclick="sendCmd('R')">▶</button>
+                <button class="btn" onclick="sendCmd('H')">↙</button>
+                <button class="btn" onclick="sendCmd('B')">▼</button>
+                <button class="btn" onclick="sendCmd('J')">↘</button>
+            </div>
+
+            <div class="card-header" style="margin-top: 0.5rem;">📷 Camera Pan/Tilt</div>
+            <div class="joystick-grid">
+                <div></div>
+                <button class="btn" onclick="sendCmd('N')">Tilt Up</button>
+                <div></div>
+                <button class="btn" onclick="sendCmd('K')">Pan Left</button>
+                <button class="btn" onclick="sendCmd('P')">Center</button>
+                <button class="btn" onclick="sendCmd('M')">Pan Right</button>
+                <div></div>
+                <button class="btn" onclick="sendCmd('O')">Tilt Down</button>
+                <div></div>
+            </div>
+
+            <button class="btn btn-stop" style="margin-top: auto;" onclick="triggerEmergencyAlarm()">🚨 EMERGENCY THREAT ALARM</button>
+        </div>
+    </div>
+
+    <script>
+        function sendCmd(cmd) {
+            console.log("Sending Command to Rover:", cmd);
+            // Connect to WebSocket or REST API serial bridge if active
+        }
+
+        function updateSpeed(val) {
+            document.getElementById('speed-val').innerText = val + " (" + Math.round((val/255)*100) + "%)";
+            let speedCmd = Math.floor(((val - 100) / 155) * 9);
+            sendCmd(speedCmd.toString());
+        }
+
+        let hazardActive = false;
+        function toggleHazardStrobe(btn) {
+            hazardActive = !hazardActive;
+            btn.classList.toggle('active');
+            btn.innerText = hazardActive ? "Hazard Strobe (ON)" : "Hazard Strobe (OFF)";
+            sendCmd(hazardActive ? 'X' : 'x');
+        }
+
+        let obstacleActive = true;
+        function toggleObstacleSafety(btn) {
+            obstacleActive = !obstacleActive;
+            btn.classList.toggle('active');
+            btn.innerText = obstacleActive ? "Obstacle Safety (ON)" : "Obstacle Safety (OFF)";
+            sendCmd(obstacleActive ? 'Y' : 'y');
+        }
+
+        let frontActive = false;
+        function toggleHeadlights(btn) {
+            frontActive = !frontActive;
+            btn.classList.toggle('active');
+            btn.innerText = frontActive ? "Headlights (ON)" : "Headlights (OFF)";
+            sendCmd(frontActive ? 'W' : 'w');
+        }
+
+        let backActive = false;
+        function toggleTaillights(btn) {
+            backActive = !backActive;
+            btn.classList.toggle('active');
+            btn.innerText = backActive ? "Taillights (ON)" : "Taillights (OFF)";
+            sendCmd(backActive ? 'U' : 'u');
+        }
+
+        let alarmActive = false;
+        function triggerEmergencyAlarm() {
+            alarmActive = !alarmActive;
+            const statusBadge = document.getElementById('system-status');
+            if (alarmActive) {
+                statusBadge.innerText = "🚨 THREAT ALARM ACTIVE";
+                statusBadge.classList.add('alert');
+                sendCmd('A');
+            } else {
+                statusBadge.innerText = "SYSTEM SAFE - PATROL MODE";
+                statusBadge.classList.remove('alert');
+                sendCmd('a');
+            }
+        }
+    </script>
+</body>
+</html>
