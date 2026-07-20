@@ -14,6 +14,7 @@ A comprehensive robotics and computer vision project integrating an **Arduino-co
 ## 📌 Table of Contents
 
 - [Overview](#-overview)
+- [🖼️ Hardware & System Showcase](#️-hardware--system-showcase)
 - [✨ Advanced Features](#-advanced-features)
 - [System Architecture](#-system-architecture)
 - [Hardware Wiring & Pinout](#-hardware-wiring--pinout)
@@ -33,6 +34,25 @@ Security monitoring in high-risk environments requires rapid threat identificati
 
 1. **Physical Rover Hardware Chassis**: Controlled via an **Arduino Uno** and **L298N Motor Driver**, communicating wirelessly over a **Bluetooth HC-05/06 serial link**. Features variable PWM speed control, active electronic braking, directional steering, front/rear LED signaling lights, an acoustic buzzer horn, camera pan/tilt servos, and HC-SR04 ultrasonic obstacle avoidance.
 2. **AI & Deep Learning Perception Pipeline**: Python computer vision pipeline trained for real-time weapon detection (firearms, knives, threat objects). Automatically triggers active rover alarms and emergency braking upon threat detection.
+
+---
+
+## 🖼️ Hardware & System Showcase
+
+### 🛠️ Annotated Physical Hardware Assembly
+Below is the physical hardware setup of the security rover with annotated component placements including the Arduino Board, L298N Motor Driver, HC-05 Bluetooth Module, LED Lights, 3D Printed Wheels, and Acrylic Chassis.
+
+![Physical Security Rover Hardware Assembly](Screenshot%202026-07-20%20084110.png)
+
+### 🎯 AI & Deep Learning Object Detection Pipeline
+The computer vision pipeline utilizes grid-based bounding box predictions and deep neural network object classification (YOLO / MobileNet SSD) to identify target threats in real time.
+
+![YOLO Object Detection Architecture Pipeline](Picture2.png)
+
+### 🎬 System Operation & Demonstration
+Demonstration preview of the teleoperated rover and autonomous threat response system in action.
+
+![Security Rover Operation Demonstration](Picture1.gif)
 
 ---
 
@@ -142,22 +162,25 @@ Features:
 
 ```text
 Rover_Project-main/
+├── Screenshot 2026-07-20 084110.png  # Annotated Physical Rover Hardware Assembly
+├── Picture2.png                      # YOLO Object Detection Pipeline Architecture
+├── Picture1.gif                      # Animated Security Rover Demonstration
 ├── Code/
-│   ├── newcAR.ino              # Enhanced C++ Arduino firmware (Motors, Servos, Sensors, Bluetooth)
-│   ├── bt drone code.text      # Firmware code backup & technical reference
-│   ├── weapon_detection.py     # Python OpenCV & AI real-time weapon detection script
+│   ├── newcAR.ino                    # Enhanced C++ Arduino firmware
+│   ├── bt drone code.text            # Firmware code backup & reference
+│   ├── weapon_detection.py           # Python OpenCV AI weapon detection script
 │   └── dashboard/
-│       └── index.html          # Web Control & Surveillance Dashboard
+│       └── index.html                # Web Control & Surveillance Dashboard
 ├── PAPERS/
-│   ├── report.pdf              # Comprehensive project report (PDF)
-│   ├── report.docx             # Project report document (Word)
-│   ├── schematic.pdf           # Hardware circuit wiring & schematic diagram
-│   └── base papper...pdf       # Base Research Paper on ML Object Detection
+│   ├── report.pdf                    # Comprehensive project report (PDF)
+│   ├── report.docx                   # Project report document (Word)
+│   ├── schematic.pdf                 # Hardware circuit wiring & schematic diagram
+│   └── base papper...pdf             # Base Research Paper on ML Object Detection
 ├── REVIEW/
-│   ├── 0TH/                    # 0th Review Presentation Decks
-│   ├── 1ST/                    # 1st Review Presentation Decks
-│   └── 2ND/                    # 2nd Final Review Presentation Decks
-└── README.md                   # Updated Project Documentation
+│   ├── 0TH/                          # 0th Review Presentation Decks
+│   ├── 1ST/                          # 1st Review Presentation Decks
+│   └── 2ND/                          # 2nd Final Review Presentation Decks
+└── README.md                         # Updated Project Documentation
 ```
 
 ---
